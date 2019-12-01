@@ -35,7 +35,7 @@ def main():
 
     ax.set_xlabel('Размер')
     ax.set_ylabel('Время (ms)')
-    plt.title('Квантель уровня {}'.format(Fraction(k)))
+    plt.title('Квантель уровня {}'.format(Fraction(k).limit_denominator(max_denominator=10)))
     plt.legend(['Naive select', 'Randomized select', 'Determined select'])
     plt.show()
 
