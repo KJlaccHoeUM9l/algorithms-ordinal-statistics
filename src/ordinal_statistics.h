@@ -89,18 +89,6 @@ std::pair<T, double> RandomizedSelect(std::vector<T> array, std::size_t i) {
 }
 
 // ******************************************* Determined Select *******************************************************
-template <typename DataType, typename IterType = typename std::vector<DataType>::iterator>
-std::vector<std::pair<IterType, IterType>> SplitArray(std::vector<DataType>& array) {
-    size_t num_groups = static_cast<size_t>(array.size() / 5.0 + 0.9);
-    std::vector<std::pair<IterType, IterType>> split(num_groups);
-
-    for (size_t i = 0; i < num_groups; i++) {
-        split[i] = {std::next(array.begin(), i * 5), std::next(array.begin(), std::min((i + 1) * 5, array.size()))};
-    }
-
-    return split;
-}
-
 template <typename FirstIt, typename LastIt>
 std::vector<std::pair<FirstIt, LastIt>> SplitArray(FirstIt first, LastIt last) {
     auto num_groups = static_cast<size_t>(std::distance(first, last) / 5.0 + 0.9);
