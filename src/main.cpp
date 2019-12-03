@@ -9,6 +9,7 @@
 
 
 size_t size_of_item_selection;
+const size_t min_ordinal_statistic = 1;
 const size_t simple_numbers_size = 1000000;
 const std::vector<int> simple_numbers = SieveEratosthenes(simple_numbers_size);
 
@@ -51,7 +52,7 @@ std::vector<std::vector<double>> ProcessData(DataFunction data_function, double 
         std::vector<double> current_determined_times(size_of_item_selection);
         for (size_t i = 0; i < size_of_item_selection; i++) {
             auto data = data_function(N);
-            auto k = static_cast<size_t>(quantile * N);
+            auto k = std::clamp(static_cast<size_t>(quantile * N), min_ordinal_statistic, N);
 
             auto[value_naive, time_naive] = NaiveSelect(data, k);
             auto[value_randomized, time_randomized] = NaiveSelect(data, k);
@@ -76,13 +77,11 @@ std::vector<std::vector<double>> ProcessData(DataFunction data_function, double 
 int main() {
 //    RunTests();
 
-    // Set parameters
-    auto data_type = Inputs(2);
-    double quantile = 1.0 / 3.0;
+    // Set up parameters
+    auto data_type = Inputs(0);
+    double quantile = 3.0 / 4.0;
     size_of_item_selection = 10;
-//    std::vector<size_t> sizes = {500, 1000, 1500, 2000, 2500};
-//    std::vector<size_t> sizes = {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000};
-    std::vector<size_t> sizes = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
+    std::vector<size_t> sizes = {500, 1000, 1500, 2000, 2500};
 //    std::vector<size_t> sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
 //    std::vector<size_t> sizes = {1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000};
 

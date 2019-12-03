@@ -71,7 +71,7 @@ double GetMean(const std::vector<double>& array) {
 }
 
 void DrawResults(double quantile, const std::vector<size_t>& sizes, const std::vector<std::vector<double>>& times) {
-    std::string python_file = "C:\\study\\algorithms\\algorithms-ordinal-statistics\\3rdparty\\draw_graphs.py";
+    std::string python_file = "..\\3rdparty\\draw_graphs.py";
     std::string sizes_string = ConvertVectorToString(sizes);
     std::string times_naive = ConvertVectorToString(times[0]);
     std::string times_randomized = ConvertVectorToString(times[1]);
