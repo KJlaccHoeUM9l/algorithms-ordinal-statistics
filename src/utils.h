@@ -84,4 +84,22 @@ void DrawResults(double quantile, const std::vector<size_t>& sizes, const std::v
     system(cmd.c_str());
 }
 
+void DrawHistogram(size_t size, size_t x_length, const std::vector<double>& x,
+                   const std::vector<std::vector<std::vector<double>>>& data) {
+    std::string python_file = "..\\3rdparty\\draw_hist.py";
+    std::string x_data = ConvertVectorToString(x);
+    std::string y_data = "";
+    for (const auto& matrix: data) {
+        for (const auto& vector: matrix) {
+            y_data += ConvertVectorToString(vector) + " ";
+        }
+    }
+    y_data.pop_back();
+
+    std::string cmd = "python " + python_file + " " + std::to_string(size) + " " + std::to_string(x_length) + " " +
+                      x_data + " " + y_data;
+    
+    system(cmd.c_str());
+}
+
 #endif //ORDINAL_STATISTICS_UTILS_H

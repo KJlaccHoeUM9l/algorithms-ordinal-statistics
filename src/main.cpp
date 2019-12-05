@@ -74,19 +74,7 @@ std::vector<std::vector<double>> ProcessData(DataFunction data_function, double 
     return {naive_times, randomized_times, determined_times};
 }
 
-int main() {
-//    RunTests();
-
-    // Set up parameters
-    auto data_type = Inputs(0);
-    double quantile = 3.0 / 4.0;
-    size_of_item_selection = 10;
-    std::vector<size_t> sizes = {500, 1000, 1500, 2000, 2500};
-//    std::vector<size_t> sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
-//    std::vector<size_t> sizes = {1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000};
-
-    // Process data
-    std::cout << "C++: process data..." << std::endl;
+std::vector<std::vector<double>> GetWorkTimes(const Inputs& data_type, double quantile, const std::vector<size_t>& sizes) {
     std::vector<std::vector<double>> times;
     switch (data_type) {
         case Inputs::simple_numbers_array: {
@@ -102,9 +90,51 @@ int main() {
             break;
         }
     }
+    return times;
+}
+
+void main1() {
+    // Set up parameters
+    auto data_type = Inputs(0);
+    double quantile = 3.0 / 4.0;
+    std::vector<size_t> sizes = {500, 1000, 1500, 2000, 2500};
+//    std::vector<size_t> sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
+//    std::vector<size_t> sizes = {1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000};
+
+    // Process data
+    std::cout << "C++: process data..." << std::endl;
+    std::vector<std::vector<double>> times = GetWorkTimes(data_type, quantile, sizes);
 
     // Draw results
     DrawResults(quantile, sizes, times);
+}
+
+void main2() {
+    std::vector<double> quantiles = {0, 1.0 / 4.0, 1.0 / 3.0, 1.0 / 2.0, 2.0 / 3.0, 3.0 / 4.0, 1};
+    std::vector<size_t> size = {1000000};
+    std::vector<Inputs> data_types = {Inputs::simple_numbers_array, Inputs::vectors_of_simple_numbers,
+                                      Inputs::natural_numbers_uniform_distribution};
+
+    std::cout << "C++: process data..." << std::endl;
+    std::vector<std::vector<std::vector<double>>> all_times;
+    for (Inputs data_type: data_types) {
+        std::vector<std::vector<double>> times_for_current_data_type;
+        for (double quantile: quantiles) {
+            auto times_for_current_quantile = GetWorkTimes(data_type, quantile, size);
+            times_for_current_data_type.emplace_back(std::vector<double>{times_for_current_quantile[0][0],
+                                                                         times_for_current_quantile[1][0],
+                                                                         times_for_current_quantile[2][0]});
+        }
+        all_times.push_back(times_for_current_data_type);
+    }
+    DrawHistogram(*size.begin(), quantiles.size(), quantiles, all_times);
+}
+
+int main() {
+//    RunTests();
+    size_of_item_selection = 10;
+//    main1();
+    main2();
 
     return 0;
 }
