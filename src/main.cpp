@@ -111,15 +111,17 @@ void main1() {
 
 void main2() {
     std::vector<double> quantiles = {0, 1.0 / 4.0, 1.0 / 3.0, 1.0 / 2.0, 2.0 / 3.0, 3.0 / 4.0, 1};
-    std::vector<size_t> size = {1000000};
+    std::vector<size_t> size = {1000};
     std::vector<Inputs> data_types = {Inputs::simple_numbers_array, Inputs::vectors_of_simple_numbers,
                                       Inputs::natural_numbers_uniform_distribution};
 
     std::cout << "C++: process data..." << std::endl;
     std::vector<std::vector<std::vector<double>>> all_times;
     for (Inputs data_type: data_types) {
+        std::cout << "Data type: " << data_type << std::endl;
         std::vector<std::vector<double>> times_for_current_data_type;
         for (double quantile: quantiles) {
+            std::cout << "\tQuantile: " << quantile << std::endl;
             auto times_for_current_quantile = GetWorkTimes(data_type, quantile, size);
             times_for_current_data_type.emplace_back(std::vector<double>{times_for_current_quantile[0][0],
                                                                          times_for_current_quantile[1][0],
