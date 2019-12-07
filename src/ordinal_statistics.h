@@ -19,17 +19,18 @@ void CheckBoundaries(const std::vector<T>& array, std::size_t i) {
 template <typename FirstIt, typename LastIt, typename DataType = typename std::iterator_traits<FirstIt>::value_type>
 FirstIt ModifiedPartition(FirstIt first, LastIt last, DataType pivot_element) {
     FirstIt right_first = std::partition(first, last, [pivot_element](DataType element) {
-        return element <= pivot_element;
+//        return element <= pivot_element;
+        return element < pivot_element;
     });
-    if (std::distance(first, right_first) == 0) {
-        right_first = std::next(right_first);
-    } else if (std::distance(right_first, last) == 0) {
-        auto max_element_it = std::max_element(first, right_first);
-        if (*std::prev(right_first) != *max_element_it) {
-            std::swap(*std::prev(right_first), *max_element_it);
-        }
-        right_first = std::prev(right_first);
-    }
+//    if (std::distance(first, right_first) == 0) {
+//        right_first = std::next(right_first);
+//    } else if (std::distance(right_first, last) == 0) {
+//        auto max_element_it = std::max_element(first, right_first);
+//        if (*std::prev(right_first) != *max_element_it) {
+//            std::swap(*std::prev(right_first), *max_element_it);
+//        }
+//        right_first = std::prev(right_first);
+//    }
     return right_first;
 }
 
@@ -58,8 +59,13 @@ std::pair<T, double> NaiveSelect(std::vector<T> array, std::size_t i) {
 template <typename FirstIt, typename LastIt>
 FirstIt RandomizedPartition(FirstIt first, LastIt last) {
     FirstIt pivot_it = std::next(first, Random(0, std::distance(first, last) - 1));
+    auto first_right = ModifiedPartition(first, last, *pivot_it);
+    if (std::distance(first, first_right) == 0) {
+        std::swap(*pivot_it, *first_right);
+        first_right = std::next(first_right);
+    }
 
-    return ModifiedPartition(first, last, *pivot_it);
+    return first_right;
 }
 
 template <typename FirstIt, typename LastIt>
@@ -68,6 +74,7 @@ FirstIt RecursiveRandomizedSelect(FirstIt first, LastIt last, size_t i) {
         return first;
     }
 
+    // Сделать иллюминацию хвостовой рекурсии
     FirstIt right_first_it = RandomizedPartition(first, last);
     int size_left_part = std::distance(first, right_first_it);
     if (i < size_left_part) {
@@ -120,10 +127,16 @@ FirstIt Select(FirstIt first, LastIt last, std::size_t i) {
         medians.push_back(Median(group.first, group.second));
     }
 
-    DataType total_median = *Select(medians.begin(), medians.end(), static_cast<size_t>(medians.size() / 2.0 - 0.5));
-    FirstIt right_first = ModifiedPartition(first, last, total_median);
+//    DataType total_median = *Select(medians.begin(), medians.end(), static_cast<size_t>(medians.size() / 2.0 - 0.5));
+    FirstIt total_median_it = Select(medians.begin(), medians.end(), static_cast<size_t>(medians.size() / 2.0 - 0.5));
+//    FirstIt right_first = ModifiedPartition(first, last, total_median);
+    FirstIt right_first = ModifiedPartition(first, last, *total_median_it);
+    if (std::distance(first, right_first) == 0) {
+        std::swap(*total_median_it, *right_first);
+        right_first = std::next(right_first);
+    }
 
-    size_t size_left_part = static_cast<size_t>(std::distance(first, right_first));
+    auto size_left_part = static_cast<size_t>(std::distance(first, right_first));
     if (i < size_left_part) {
         return Select(first, right_first, i);
     } else {
