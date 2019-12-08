@@ -87,7 +87,7 @@ std::pair<T, double> RandomizedSelect(std::vector<T> array, std::size_t i) {
 // ******************************************* Determined Select *******************************************************
 template <typename FirstIt, typename LastIt>
 std::vector<std::pair<FirstIt, LastIt>> SplitArray(FirstIt first, LastIt last) {
-    size_t split_size = 5;
+    size_t split_size = 11;
     auto num_groups = static_cast<size_t>(std::distance(first, last) / static_cast<double>(split_size) + 0.9);
     std::vector<std::pair<FirstIt, LastIt>> split(num_groups);
 

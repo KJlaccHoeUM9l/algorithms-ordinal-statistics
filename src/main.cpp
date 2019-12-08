@@ -94,10 +94,10 @@ std::vector<std::vector<double>> GetWorkTimes(const Inputs& data_type, double qu
 
 void main1() {
     // Set up parameters
-    auto data_type = Inputs(1);
-    double quantile = 3.0 / 4.0;
-    std::vector<size_t> sizes = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
-//    std::vector<size_t> sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
+    auto data_type = Inputs(0);
+    double quantile = 1.0 / 2.0;
+//    std::vector<size_t> sizes = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
+    std::vector<size_t> sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
 
     // Process data
     std::cout << "C++: process data..." << std::endl;
@@ -109,7 +109,7 @@ void main1() {
 
 void main2() {
     std::vector<double> quantiles = {0, 1.0 / 4.0, 1.0 / 3.0, 1.0 / 2.0, 2.0 / 3.0, 3.0 / 4.0, 1};
-    std::vector<size_t> size = {100000};
+    std::vector<size_t> size = {1000000};
     std::vector<Inputs> data_types = {Inputs::simple_numbers_array, Inputs::vectors_of_simple_numbers,
                                       Inputs::natural_numbers_uniform_distribution};
 
@@ -131,7 +131,7 @@ void main2() {
 }
 
 int main() {
-    size_of_item_selection = 1;
+    size_of_item_selection = 10;
 //    RunTests();
 //    main1();
     main2();
