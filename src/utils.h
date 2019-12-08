@@ -54,16 +54,7 @@ std::string ConvertVectorToString(const std::vector<T>& array) {
 
 template <typename T>
 bool operator<(const std::vector<T>& lhs, const std::vector<T>& rhs) {
-    if (lhs.size() != rhs.size()) {
-        return lhs.size() < rhs.size();
-    } else {
-        for (size_t i = 0; i < lhs.size(); i++) {
-            if (rhs[i] > lhs[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
+    return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 double GetMean(const std::vector<double>& array) {

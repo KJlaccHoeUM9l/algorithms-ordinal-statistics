@@ -95,7 +95,6 @@ void randomized_select_array_with_repetitions() {
 // ***************************************** Determined Select *********************************************************
 void determined_select_split_array() {
     std::vector<int> array = {1, 2, 3, 4, 6, 5, 7, -1, 3};
-//    auto boundaries = SplitArray(array);
     auto boundaries = SplitArray(array.begin(), array.end());
 
     auto first_part = std::vector<int>{boundaries[0].first, boundaries[0].second};
@@ -110,7 +109,6 @@ void determined_select_split_array() {
 
 void determined_select_split_array_two() {
     std::vector<int> array = {3, 5};
-//    auto boundaries = SplitArray(array);
     auto boundaries = SplitArray(array.begin(), array.end());
 
     auto part = std::vector<int>{boundaries[0].first, boundaries[0].second};
@@ -277,9 +275,9 @@ void RunTests() {
     RUN_TEST(tr, randomized_select_array_without_repetitions_five);
     RUN_TEST(tr, randomized_select_array_with_repetitions);
 
-    RUN_TEST(tr, determined_select_split_array);
-    RUN_TEST(tr, determined_select_split_array_two);
-    RUN_TEST(tr, determined_select_split_array_three);
+//    RUN_TEST(tr, determined_select_split_array);
+//    RUN_TEST(tr, determined_select_split_array_two);
+//    RUN_TEST(tr, determined_select_split_array_three);
     RUN_TEST(tr, determined_select_sort_array);
     RUN_TEST(tr, determined_select_sort_array_two);
     RUN_TEST(tr, determined_select_sort_array_three);

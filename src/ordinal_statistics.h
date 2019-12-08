@@ -16,21 +16,16 @@ void CheckBoundaries(const std::vector<T>& array, std::size_t i) {
     }
 }
 
-template <typename FirstIt, typename LastIt, typename DataType = typename std::iterator_traits<FirstIt>::value_type>
-FirstIt ModifiedPartition(FirstIt first, LastIt last, DataType pivot_element) {
+template <typename FirstIt, typename LastIt, typename PivotIt, typename DataType = typename std::iterator_traits<FirstIt>::value_type>
+FirstIt ModifiedPartition(FirstIt first, LastIt last, PivotIt pivot){
+    DataType pivot_element = *pivot;
     FirstIt right_first = std::partition(first, last, [pivot_element](DataType element) {
-//        return element <= pivot_element;
         return element < pivot_element;
     });
-//    if (std::distance(first, right_first) == 0) {
-//        right_first = std::next(right_first);
-//    } else if (std::distance(right_first, last) == 0) {
-//        auto max_element_it = std::max_element(first, right_first);
-//        if (*std::prev(right_first) != *max_element_it) {
-//            std::swap(*std::prev(right_first), *max_element_it);
-//        }
-//        right_first = std::prev(right_first);
-//    }
+    if (std::distance(first, right_first) == 0) {
+        std::swap(*pivot, *right_first);
+        right_first = std::next(right_first);
+    }
     return right_first;
 }
 
@@ -59,29 +54,23 @@ std::pair<T, double> NaiveSelect(std::vector<T> array, std::size_t i) {
 template <typename FirstIt, typename LastIt>
 FirstIt RandomizedPartition(FirstIt first, LastIt last) {
     FirstIt pivot_it = std::next(first, Random(0, std::distance(first, last) - 1));
-    auto first_right = ModifiedPartition(first, last, *pivot_it);
-    if (std::distance(first, first_right) == 0) {
-        std::swap(*pivot_it, *first_right);
-        first_right = std::next(first_right);
-    }
-
-    return first_right;
+    return ModifiedPartition(first, last, pivot_it);
 }
 
 template <typename FirstIt, typename LastIt>
-FirstIt RecursiveRandomizedSelect(FirstIt first, LastIt last, size_t i) {
-    if (std::next(first) == last) {
-        return first;
-    }
+FirstIt NonRecursiveRandomizedSelect(FirstIt first, LastIt last, size_t i) {
+    while (std::next(first) != last) {
+        FirstIt right_first_it = RandomizedPartition(first, last);
+        int size_left_part = std::distance(first, right_first_it);
 
-    // Сделать иллюминацию хвостовой рекурсии
-    FirstIt right_first_it = RandomizedPartition(first, last);
-    int size_left_part = std::distance(first, right_first_it);
-    if (i < size_left_part) {
-        return RecursiveRandomizedSelect(first, right_first_it, i);
-    } else {
-        return RecursiveRandomizedSelect(right_first_it, last, i - size_left_part);
+        if (i < size_left_part) {
+            last = right_first_it;
+        } else {
+            first = right_first_it;
+            i -= size_left_part;
+        }
     }
+    return first;
 }
 
 template <typename T>
@@ -89,7 +78,7 @@ std::pair<T, double> RandomizedSelect(std::vector<T> array, std::size_t i) {
     CheckBoundaries(array, i);
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    auto result = *(RecursiveRandomizedSelect(array.begin(), array.end(), i - 1));
+    auto result = *(NonRecursiveRandomizedSelect(array.begin(), array.end(), i - 1));
     double time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
 
     return std::make_pair(result, time);
@@ -98,12 +87,13 @@ std::pair<T, double> RandomizedSelect(std::vector<T> array, std::size_t i) {
 // ******************************************* Determined Select *******************************************************
 template <typename FirstIt, typename LastIt>
 std::vector<std::pair<FirstIt, LastIt>> SplitArray(FirstIt first, LastIt last) {
-    auto num_groups = static_cast<size_t>(std::distance(first, last) / 5.0 + 0.9);
+    size_t split_size = 5;
+    auto num_groups = static_cast<size_t>(std::distance(first, last) / static_cast<double>(split_size) + 0.9);
     std::vector<std::pair<FirstIt, LastIt>> split(num_groups);
 
     for (size_t i = 0; i < num_groups; i++) {
-        split[i] = {std::next(first, i * 5),
-                    std::next(first, std::min((i + 1) * 5, static_cast<size_t>(std::distance(first, last))))};
+        split[i] = {std::next(first, i * split_size),
+                    std::next(first, std::min((i + 1) * split_size, static_cast<size_t>(std::distance(first, last))))};
     }
 
     return split;
@@ -127,14 +117,8 @@ FirstIt Select(FirstIt first, LastIt last, std::size_t i) {
         medians.push_back(Median(group.first, group.second));
     }
 
-//    DataType total_median = *Select(medians.begin(), medians.end(), static_cast<size_t>(medians.size() / 2.0 - 0.5));
     FirstIt total_median_it = Select(medians.begin(), medians.end(), static_cast<size_t>(medians.size() / 2.0 - 0.5));
-//    FirstIt right_first = ModifiedPartition(first, last, total_median);
-    FirstIt right_first = ModifiedPartition(first, last, *total_median_it);
-    if (std::distance(first, right_first) == 0) {
-        std::swap(*total_median_it, *right_first);
-        right_first = std::next(right_first);
-    }
+    FirstIt right_first = ModifiedPartition(first, last, total_median_it);
 
     auto size_left_part = static_cast<size_t>(std::distance(first, right_first));
     if (i < size_left_part) {
